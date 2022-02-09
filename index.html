@@ -1,0 +1,379 @@
+<!--
+ * @Author: achens
+ * @Date: 2021-12-28 17:00:25
+ * @LastEditTime: 2022-01-15 23:39:11
+ * @LastEditors: Please set LastEditors
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>写一个自己的 jQuery 框架</title>
+    <style>
+      .tag {
+        color: orange;
+        background-color: black;
+      }
+      .index {
+        color: chartreuse;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 事件绑定测试 -->
+    <div class="buttons">
+      <button class="click">测试点击事件</button>
+      <button class="move">bind() 方法绑定事件</button>
+      <button class="event">bind() 方法同时绑定多个事件</button>
+    </div>
+    <!-- 样式获取修改测试 -->
+    <div class="app">
+      <div id="app">
+        <p class="con1">我是 p 标签1</p>
+        <p class="con2">我是 p 标签2</p>
+        <p class="con3">我是 p 标签3</p>
+      </div>
+      <button class="pUpdate1">点击我修改第二个 p 标签的背景颜色</button>
+      <button class="pUpdate2">
+        点击我修改第三个 p 标签的字体颜色和背景颜色
+      </button>
+    </div>
+    <!-- 属性获取修改测试 -->
+    <div class="attrs">
+      <img
+        src="https://www.keaidian.com/uploads/allimg/181206/co1Q206121F4-0-0.jpg
+    "
+        alt="错误"
+        title="你好"
+        width="100px"
+        class="one"
+      />
+      <img
+        src="https://www.keaidian.com/uploads/allimg/181206/co1Q206121F4-0-1.jpg
+    "
+        alt="错误"
+        title="你好"
+        width="100px"
+        class="two"
+      />
+      <img
+        src="https://www.keaidian.com/uploads/allimg/181206/co1Q206121F4-0-1.jpg
+    "
+        alt="错误"
+        title="你好"
+        width="200px"
+        class="three"
+      />
+      <button class="imgUpdate1">点击我修改第二张图的大小</button>
+      <button class="imgUpdate2">点击我修改第三张图的大小和 src</button>
+    </div>
+    <!-- Text HTML 获取设置测试 -->
+    <div class="textHtml">
+      <div class="text1">我是文本一号</div>
+      <div class="text2">我是文本二号</div>
+      <button class="textUpdate">点我修改文本二号内容</button>
+      <div class="html1">
+        <p>html 一号</p>
+      </div>
+      <div class="html2">
+        <p>html 二号</p>
+      </div>
+      <button class="htmlUpdate">点我修改 html 二号内容</button>
+    </div>
+    <!-- 类名添加删除测试 -->
+    <div class="class">
+      <div class="class1">类名添加</div>
+      <div class="class2">类名删除</div>
+      <div class="class3 tag">类名切换</div>
+      <button class="classAdd">点我添加</button>
+      <button class="classDel">点我删除</button>
+      <button class="classToggle">点我切换</button>
+    </div>
+    <!-- 插入删除子元素测试 -->
+    <div class="insertChild">
+      <p>我是子元素一号</p>
+    </div>
+    <!-- 获取父元素、子元素、准确子元素测试 -->
+    <div class="box">
+      <span>1</span>
+      <span class="span">2</span>
+      <span class="span">3</span>
+      <button class="first">点击我修改第一个子元素内容</button>
+      <button class="last">点击我修改最后一个子元素内容</button>
+      <button class="child">点击我修改第二个子元素内容</button>
+    </div>
+    <!-- 获取第一个、最后一个子元素测试 -->
+    <div class="firstLast">
+      <p class="first">第一个子元素</p>
+      <p class="middle">中间子元素</p>
+      <p class="last">最后一个子元素</p>
+    </div>
+    <!-- 获取兄弟元素 -->
+    <div class="brothers">
+      <span class="prev s">1</span>
+      <span class="prev s">2</span>
+      <span class="next">3</span>
+      <span id="prev">4</span>
+      <p>我是 p 标签</p>
+      <span class="bro">5</span>
+      <p>我也是 p 标签</p>
+      <span id="next">6</span>
+      <span>7</span>
+      <span class="prev">8</span>
+      <span class="next s">9</span>
+      <span class="next s">10</span>
+    </div>
+    <!-- 在自身前后插入元素 -->
+    <div class="dom">
+      <p class="content">中间</p>
+    </div>
+    <!-- 获取 DOM 列表中的元素 -->
+    <div class="eq">
+      <p>1</p>
+      <p>2</p>
+      <p>3</p>
+      <p>4</p>
+      <p>5</p>
+      <p>6</p>
+      <p>7</p>
+      <p>8</p>
+      <p>9</p>
+      <p>10</p>
+    </div>
+    <!-- 删除全部子元素测试 -->
+    <div class="removeAll">
+      <span class="es">我是测试元素</span>
+      <span class="es">我是测试元素</span>
+      <span class="es">我是测试元素</span>
+    </div>
+    <!-- 导入 SQuery.js 文件 -->
+    <script src="./SQuery.js"></script>
+    <!-- 第一到第五个功能测试 -->
+    <script>
+      // 1. 实现功能一：事件绑定、多个事件绑定
+      $(".click").on("click", function (event, index) {
+        console.log("on() 方法绑定方法");
+      });
+      // 使用 bind() 方法绑定方法
+      $(".move").bind({
+        on: "click",
+        bool: false,
+        func: function () {
+          console.log("对象形式只绑定一个事件类型");
+        },
+      });
+      // 使用 bind() 方法同时绑定多个方法
+      $(".event").bind([
+        {
+          on: "click",
+          bool: false,
+          func: function () {
+            console.log("第一个方法");
+          },
+        },
+        {
+          on: "mouseenter",
+          bool: false,
+          func: function () {
+            console.log("第二个方法");
+          },
+        },
+      ]);
+      // 2. 实现功能二：访问和设置 CSS
+      let p1 = $("p.con1").css("width");
+      console.log("p1 的宽度：" + p1);
+      // 修改样式
+      let p2 = $("p.con2").css("background-color", "pink");
+      console.log("p2修改结果：", p2.dom());
+      // 以对象形式修改样式
+      let p3 = $("p.con3").css({
+        backgroundColor: "black",
+        color: "red",
+      });
+      console.log("p3修改结果：", p3.dom());
+      // 3. 实现功能三：访问和设置 attrs
+      let imgSrc = $("img.one").attr("src");
+      console.log("图片1 的 src 属性：", imgSrc);
+      // 修改属性
+      let imgWidth = $("img.two").attr("width", "150px");
+      console.log("图片2 的修改结果：", imgWidth.dom());
+      // 同时修改多个属性
+      let imgSrcWidth = $("img.three").attr({
+        src: "https://img2.huashi6.com/images/resource/2020/11/05/8547h9212p1.jpg?imageView2/3/q/100/interlace/1/w/138/h/138/format/webp",
+        width: "200px",
+      });
+      console.log("图3 的修改结果：", imgSrcWidth.dom());
+      // 4. 实现功能四：访问和设置元素的 Text HTML
+      let text1 = $("div.text1").text();
+      console.log("获取文本值：", text1);
+      let text2 = $("div.text2").text("你好");
+      console.log("修改后文本值：", text2.text());
+      let html1 = $("div.html1").html();
+      console.log("获取元素内容：", html1);
+      let html2 = $("div.html2").html("<p>我好</p>");
+      console.log("修改后元素内容：", html2.html());
+      // 5. 实现功能五：添加和移除类名
+      var class1 = $(".class1").class();
+      console.log("第一个 div 的类名：", class1);
+      var class1 = $(".class1").addClass("tag", ["className1", "className2"]);
+      console.log("第一个 div 的类名被改为：", class1.class());
+      let class2 = $(".class2").addClass("tag").delClass("tag", "class2");
+      console.log("第二个 div 的类名被修改为：", class2.class());
+      console.log("第二个 div 的类名被修改为：", class2.class("index").class());
+      // 点击切换类名
+      $("button.classToggle").on("click", function () {
+        $(".class3").toggle("tag").toggle("index");
+      });
+    </script>
+    <!-- 第六到第十一个功能测试 -->
+    <script>
+      // 6. 实现功能六：插入和删除子元素元素
+      let pFirst = document.createElement("p");
+      pFirst.classList.add("first");
+      pFirst.innerText = "第一个子元素";
+      let pLast = document.createElement("p");
+      pLast.classList.add("last");
+      pLast.innerText = "第二个子元素";
+      let pInsert = document.createElement("p");
+      pInsert.classList.add("insert");
+      pInsert.innerText = "插入元素";
+      // 在子元素最前面插入测试
+      $("div.insertChild").addFirstChild(pFirst).text();
+      $("div.insertChild").addFirstChild("<div>1</div>");
+      $("div.insertChild").addFirstChild(2);
+      // 在子元素最后面插入测试
+      console.log($("div.insertChild").addLastChild(pLast).text());
+      $("div.insertChild").addLastChild("<div>1</div>");
+      $("div.insertChild").addLastChild(2);
+      // 插入子元素测试
+      $("div.insertChild").insertChild(4, pInsert, true);
+      $("div.insertChild").insertChild(6, pInsert, false);
+      $("div.insertChild").insertChild(1, "我是一个字符串", true);
+      $("div.insertChild").insertChild(2, "我也是一个字符串", false);
+      $("div.insertChild").insertChild(0, "<div>3</div>", true);
+      $("div.insertChild").insertChild(10, "<div>3</div>", false);
+      // 删除子元素测试
+      $("div.insertChild").removeChild(3);
+      $("div.insertChild").removeChild("p");
+      $("div.removeAll").removeChild();
+      // 7. 实现功能七：获取父、爷爷、祖先...元素与子元素和准确子元素
+      console.log("页面中第一个 span 标签的父元素是", $("span").parent().dom());
+      console.log(
+        "页面中第一个 span 标签的父元素中类名是 .box 的是：",
+        $("span").parent(".box").dom()
+      );
+      console.log(
+        "页面中第一个 span 标签的爷爷元素是",
+        $("span").parent(2).dom()
+      );
+      console.log(
+        "页面中第一个 span 标签的祖先元素是",
+        $("span").parent(3).dom()
+      );
+      console.log(
+        "页面中第一个 span 标签的所有父元素：",
+        $("span").parentAll().dom()
+      );
+      console.log("div.box 的所有子元素：", $("div.box").children().dom());
+      console.log("div.box 的第二个子元素：", $("div.box").children(1).dom());
+      console.log(
+        "div.box 下类名为 span 的子元素：",
+        $("div.box").children(".span").dom()
+      );
+      // 8. 实现功能八：获取第一个、最后一个子元素、准确子元素
+      console.log(
+        "div.firstLast 的第一个子元素的文本是：",
+        $("div.firstLast").firstChild().text()
+      );
+      console.log(
+        "div.firstLast 的最后一个子元素的文本是：",
+        $("div.firstLast").lastChild().text()
+      );
+      console.log(
+        "div.firstLast 的第二个子元素的文本时:",
+        $("div.firstLast").child(1).text()
+      );
+      // 9. 实现功能九：获取自身对象集中的上一个、下一个、准确元素
+      console.log(
+        "div.eq>p 下第一个 p 标签的文本是：",
+        $("div.eq>p").first().text()
+      );
+      console.log(
+        "div.eq>p 下最后一个 p 标签的文本是：",
+        $("div.eq>p").last().text()
+      );
+      console.log(
+        "div.eq>p 下第二个 p 标签的文本是：",
+        $("div.eq>p").eq(2).text()
+      );
+      // 10. 实现功能十：获取兄弟元素
+      console.log(
+        "span.bro 的上一个兄弟节点的文本是：",
+        $("span.bro").prevNode().text()
+      );
+      console.log(
+        "span.bro 的上三个兄弟节点的文本是：",
+        $("span.bro").prevNode(3).text()
+      );
+      console.log("span.bro 的所有上个兄弟节点：", $("span.bro").prevNodeAll());
+      console.log(
+        "span.bro 的所有上个兄弟节点中类名是 .prev 的：",
+        $("span.bro").prevNodeAll(".prev")
+      );
+      // 通过 id 选择上一个兄弟元素
+      console.log(
+        "span.bro 的所有上个兄弟节点中 id 是 #prev 的：",
+        $("span.bro").prevNodeAll("#prev")
+      );
+      // 通过标签获取上一个兄弟元素
+      console.log(
+        "span.bro 的所有上个兄弟节点中是 p 标签的 的：",
+        $("span.bro").prevNodeAll("p")
+      );
+      console.log(
+        "span.bro 的下一个兄弟节点的文本是：",
+        $("span.bro").nextNode().text()
+      );
+      console.log(
+        "span.bro 的下三个兄弟节点的文本是：",
+        $("span.bro").nextNode(3).text()
+      );
+      console.log("span.bro 的所有下个兄弟节点：", $("span.bro").nextNodeAll());
+      console.log(
+        "span.bro 的所有下个兄弟节点中类名是 .next 的：",
+        $("span.bro").nextNodeAll(".next")
+      );
+      // 通过 id 选择上一个兄弟元素
+      console.log(
+        "span.bro 的所有下个兄弟节点中 id 是 #next 的：",
+        $("span.bro").nextNodeAll("#next")
+      );
+      // 通过标签获取上一个兄弟元素
+      console.log(
+        "span.bro 的所有下个兄弟节点中是 p 标签的 的：",
+        $("span.bro").nextNodeAll("p")
+      );
+      // 11. 实现功能十一：在自身前后插入元素
+      let insertP1 = document.createElement("p");
+      p1.innerText = "我是被插入的节点1";
+      $("div.dom > p.content").insertElementBefore(insertP1);
+      $("div.dom > p.content").insertElementBefore("123");
+      let insertP2 = document.createElement("p");
+      p2.innerText = "我是被插入的节点2";
+      $("div.dom > p.content").insertElementAfter(insertP2);
+      $("div.dom > p.content").insertElementAfter(456);
+    </script>
+    <script>
+      console.log($.forQuery($("span"), "parent", 1, 3, 4));
+      // 全局方法测试
+      console.log($.isQuery("a"));
+      console.log($.isQuery($("div")));
+      console.log($.isQuery("a").dom());
+      $("div").isQuery("a");
+    </script>
+  </body>
+</html>
